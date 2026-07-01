@@ -27,7 +27,7 @@ class DataIngestion:
             logging.error(f"Failed to connect to MongoDB: {e}")
             raise NetworkSecurityException(e, sys)
         
-    def run_data_ingestion(self):
+    def run_data_ingestion(self) -> DataIngestionArtifactConfig:
         try:
             # Fetch data from MongoDB
             data = self.fetch_data_from_mongodb()
@@ -49,6 +49,7 @@ class DataIngestion:
             test_data.to_csv(artifactConfig.test_file_path, index=False)
 
             logging.info(f"Data ingestion completed successfully. Train and test data saved to {self.data_ingestion_config.ingested_dir}.")
+            return artifactConfig
         except Exception as e:
             logging.error(f"Data ingestion failed: {e}")
             raise NetworkSecurityException(e, sys)
