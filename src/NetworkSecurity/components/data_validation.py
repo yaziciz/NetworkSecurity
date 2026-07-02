@@ -61,6 +61,7 @@ class DataValidation:
         except Exception as e:
             logging.error(f"Error checking data drift: {e}")
             raise NetworkSecurityException(e, sys)
+   
     def initiate_data_validation(self) -> DataValidationArtifactConfig:
         try:
             # Load the ingested train and test data

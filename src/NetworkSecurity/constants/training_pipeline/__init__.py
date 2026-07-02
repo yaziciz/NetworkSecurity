@@ -35,3 +35,19 @@ DATA_VALIDATION_VALID_DIR: str = "validated"
 DATA_VALIDATION_INVALID_DIR: str = "invalid"
 DATA_VALIDATION_DRIFT_REPORT_DIR: str = "drift_report"
 DATA_VALIDATION_DRIFT_REPORT_FILE_NAME: str = "report.yaml"
+
+"""
+Defining data transformation related constants.
+"""
+
+DATA_TRANSFORMATION_DIR_NAME: str = "data_transformation"
+DATA_TRANSFORMATION_TRANSFORMED_DIR: str = "transformed"
+DATA_TRANSFORMATION_PREPROCESSED_DIR: str = "preprocessed"
+PREPROCESSED_OBJECT_FILE_NAME: str = "preprocessed.pkl"
+
+# KNN Imputer for missing value imputation
+DATA_TRANSFORMATION_INPUT_PARAMS: dict = {
+    "missing_values": np.nan,
+    "n_neighbors": 3,
+    "weights": "uniform"
+}
