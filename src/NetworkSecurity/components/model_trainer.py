@@ -23,6 +23,9 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier,
 
 from src.NetworkSecurity.utils.common import evaluate_models
 
+import dagshub
+dagshub.init(repo_owner='ziyaatayazici', repo_name='NetworkSecurity', mlflow=True)
+#mlflow.autolog()
 
 class ModelTrainer:
     def __init__(self, model_trainer_config: ModelTrainerConfig, data_transformation_artifact: DataTransformationArtifactConfig):
@@ -32,14 +35,25 @@ class ModelTrainer:
         except Exception as e:
             raise NetworkSecurityException(e, sys) from e
 
-    def track_mlflow(self, model, training_metric: ClassificationMetricArtifactConfig):
+    def track_mlflow(self, model, training_metric: ClassificationMetricArtifactConfig, model_file_path: str = None):
         with mlflow.start_run() as run:
             mlflow.log_param("model_name", model.__class__.__name__)
             mlflow.log_metric("f1_score", training_metric.f1_score)
             mlflow.log_metric("precision_score", training_metric.precision_score)
             mlflow.log_metric("recall_score", training_metric.recall_score)
 
-            mlflow.sklearn.log_model(model, artifact_path="model", registered_model_name=model.__class__.__name__)
+            model_metadata = None
+            if model_file_path is not None:
+                model_metadata = {"model_save_path": model_file_path}
+
+            mlflow.sklearn.log_model(
+                model,
+                artifact_path="model",
+                registered_model_name=model.__class__.__name__,
+                metadata=model_metadata,
+            )
+            if model_file_path is not None:
+                mlflow.log_artifact(model_file_path, artifact_path="serialized_model")
     
     
     def train_model(self, x_train: np.ndarray, y_train: np.ndarray, x_test: np.ndarray = None, y_test: np.ndarray = None) -> ModelTrainerArtifactConfig:
@@ -84,22 +98,22 @@ class ModelTrainer:
             best_model_name = list(model_report.keys())[list(model_report.values()).index(best_model_score)]
             best_model = models[best_model_name]
 
-            y_train_pred = best_model.predict(x_train)
-            training_metric = get_classification_metrics(y_true=y_train, y_pred=y_train_pred)
-
-            self.track_mlflow(best_model, training_metric)
-
-            y_test_pred = best_model.predict(x_test)
-            testing_metric = get_classification_metrics(y_true=y_test, y_pred=y_test_pred)
-
-            self.track_mlflow(best_model, testing_metric)
-
             preprocessor = load_object(file_path=self.data_transformation_artifact.preprocessed_object_file_path)
             model_dir_path = os.path.dirname(self.model_trainer_config.model_file_path)
             os.makedirs(model_dir_path, exist_ok=True)
 
             Network_Model = NetworkModel(preprocessor=preprocessor, model=best_model)
             save_object(file_path=self.model_trainer_config.model_file_path, obj=Network_Model)
+
+            y_train_pred = best_model.predict(x_train)
+            training_metric = get_classification_metrics(y_true=y_train, y_pred=y_train_pred)
+
+            self.track_mlflow(best_model, training_metric, self.model_trainer_config.model_file_path)
+
+            y_test_pred = best_model.predict(x_test)
+            testing_metric = get_classification_metrics(y_true=y_test, y_pred=y_test_pred)
+
+            self.track_mlflow(best_model, testing_metric)
 
             model_trainer_artifact = ModelTrainerArtifactConfig(
                 model_file_path=self.model_trainer_config.model_file_path,
