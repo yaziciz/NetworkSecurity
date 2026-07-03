@@ -1,5 +1,6 @@
-venv/
+*venv*/
 .env
+*.db
 logs/
 data/
 *.egg-info
@@ -7,3 +8,4 @@ __pycache__/
 *.pyc
 .vscode/
 artifacts/
+mlruns/

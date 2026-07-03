@@ -2,6 +2,7 @@ import sys
 import os
 import numpy as np
 import pandas as pd
+import mlflow
 
 from src.NetworkSecurity.logging.logger import logging
 from src.NetworkSecurity.exception.exception import NetworkSecurityException
@@ -31,6 +32,16 @@ class ModelTrainer:
         except Exception as e:
             raise NetworkSecurityException(e, sys) from e
 
+    def track_mlflow(self, model, training_metric: ClassificationMetricArtifactConfig):
+        with mlflow.start_run() as run:
+            mlflow.log_param("model_name", model.__class__.__name__)
+            mlflow.log_metric("f1_score", training_metric.f1_score)
+            mlflow.log_metric("precision_score", training_metric.precision_score)
+            mlflow.log_metric("recall_score", training_metric.recall_score)
+
+            mlflow.sklearn.log_model(model, artifact_path="model", registered_model_name=model.__class__.__name__)
+    
+    
     def train_model(self, x_train: np.ndarray, y_train: np.ndarray, x_test: np.ndarray = None, y_test: np.ndarray = None) -> ModelTrainerArtifactConfig:
         try:
             models = {
@@ -76,8 +87,12 @@ class ModelTrainer:
             y_train_pred = best_model.predict(x_train)
             training_metric = get_classification_metrics(y_true=y_train, y_pred=y_train_pred)
 
+            self.track_mlflow(best_model, training_metric)
+
             y_test_pred = best_model.predict(x_test)
             testing_metric = get_classification_metrics(y_true=y_test, y_pred=y_test_pred)
+
+            self.track_mlflow(best_model, testing_metric)
 
             preprocessor = load_object(file_path=self.data_transformation_artifact.preprocessed_object_file_path)
             model_dir_path = os.path.dirname(self.model_trainer_config.model_file_path)
