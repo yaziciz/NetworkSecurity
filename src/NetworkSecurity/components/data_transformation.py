@@ -51,8 +51,10 @@ class DataTransformation:
             save_numpy_array(self.data_transformation_config.transformed_test_file_path, np.c_[X_test_transformed, y_test.values])
             save_object(self.data_transformation_config.preprocessed_object_file_path, preprocessing_pipeline)
 
-            logging.info("Data transformation process completed successfully.")
+            save_object("models/preprocessor_best.pkl", preprocessing_pipeline)
 
+            logging.info("Data transformation process completed successfully.")
+    
             return DataTransformationArtifactConfig(
                 transformed_train_file_path=self.data_transformation_config.transformed_train_file_path,
                 transformed_test_file_path=self.data_transformation_config.transformed_test_file_path,
