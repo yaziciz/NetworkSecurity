@@ -1,10 +1,11 @@
 from src.NetworkSecurity.components.data_ingestion import DataIngestion
 from src.NetworkSecurity.components.data_validation import DataValidation
 from src.NetworkSecurity.components.data_transformation import DataTransformation
+from src.NetworkSecurity.components.model_trainer import ModelTrainer
 from src.NetworkSecurity.exception.exception import NetworkSecurityException
 from src.NetworkSecurity.logging.logger import logging
 
-from src.NetworkSecurity.entity.config import TrainingPipelineConfig, DataIngestionConfig, DataValidationConfig, DataTransformationConfig
+from src.NetworkSecurity.entity.config import TrainingPipelineConfig, DataIngestionConfig, DataValidationConfig, DataTransformationConfig, ModelTrainerConfig
 
 if __name__ == "__main__":
     try:
@@ -23,6 +24,11 @@ if __name__ == "__main__":
         data_transformation = DataTransformation(data_transformation_config=data_transformation_config, data_validation_artifact=data_validation_artifact)
         data_transformation_artifact = data_transformation.run()
         logging.info("Data transformation completed successfully.")
+
+        model_trainer_config = ModelTrainerConfig(training_pipeline_config)
+        model_trainer = ModelTrainer(model_trainer_config=model_trainer_config, data_transformation_artifact=data_transformation_artifact)
+        model_trainer_artifact = model_trainer.initiate_model_trainer()
+        logging.info("Model training completed successfully.")
         
     except NetworkSecurityException as e:
         logging.error(f"NetworkSecurityException occurred: {e}")
