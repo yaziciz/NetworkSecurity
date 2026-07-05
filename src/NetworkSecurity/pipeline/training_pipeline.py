@@ -58,13 +58,13 @@ class TrainingPipeline:
     def run_model_trainer(self, data_transformation_artifact: DataTransformationArtifactConfig) -> ModelTrainerArtifactConfig:
         try:
             logging.info("Starting model training...")
-            model_trainer_config = ModelTrainerConfig(self.training_pipeline_config)
-            model_trainer = ModelTrainer(
-                model_trainer_config=model_trainer_config,
+            self.model_trainer_config = ModelTrainerConfig(self.training_pipeline_config)
+            self.model_trainer = ModelTrainer(
+                model_trainer_config=self.model_trainer_config,
                 data_transformation_artifact=data_transformation_artifact,
             )
             logging.info("Model training completed successfully.")
-            return model_trainer.initiate_model_trainer()
+            return self.model_trainer.initiate_model_trainer()
         except Exception as e:
             raise NetworkSecurityException(e, sys)
 
