@@ -45,7 +45,7 @@ jobs:
               id: meta
               uses: docker/metadata-action@v5
               with:
-                  images: ${{ secrets.DOCKER_USERNAME }}/NetworkSecurity
+                  images: ${{ secrets.DOCKER_USERNAME }}/networksecurity
                   tags: |
                       type=raw,value=latest
                       type=sha,format=short
@@ -55,6 +55,7 @@ jobs:
               with:
                   context: .
                   push: true
+                  platforms: linux/amd64,linux/arm64
                   tags: ${{ steps.meta.outputs.tags }}
                   labels: ${{ steps.meta.outputs.labels }}
                   cache-from: type=gha
