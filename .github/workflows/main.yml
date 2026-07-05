@@ -22,7 +22,7 @@ jobs:
               run: echo "Running unit tests"
 
     deployment-dockerhub:
-        name: Deployment to DockerHub
+        name: CD Pipeline
         runs-on: ubuntu-latest
         needs: integration
         steps:
@@ -38,14 +38,14 @@ jobs:
             - name: Log in to DockerHub
               uses: docker/login-action@v3
               with:
-                  username: ${{ secrets.DOCKERHUB_USERNAME }}
-                  password: ${{ secrets.DOCKERHUB_TOKEN }}
+                  username: ${{ secrets.DOCKER_USERNAME }}
+                  password: ${{ secrets.DOCKER_PASSWORD }}
 
             - name: Extract metadata (tags, labels)
               id: meta
               uses: docker/metadata-action@v5
               with:
-                  images: ${{ secrets.DOCKERHUB_USERNAME }}/NetworkSecurity
+                  images: ${{ secrets.DOCKER_USERNAME }}/NetworkSecurity
                   tags: |
                       type=raw,value=latest
                       type=sha,format=short
