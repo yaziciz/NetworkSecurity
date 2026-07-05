@@ -23,8 +23,8 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier,
 
 from src.NetworkSecurity.utils.common import evaluate_models
 
-import dagshub
-dagshub.init(repo_owner='ziyaatayazici', repo_name='NetworkSecurity', mlflow=True)
+#import dagshub
+#dagshub.init(repo_owner='ziyaatayazici', repo_name='NetworkSecurity', mlflow=True)
 #mlflow.autolog()
 
 class ModelTrainer:
