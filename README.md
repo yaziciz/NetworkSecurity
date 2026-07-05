@@ -1,4 +1,4 @@
-# Network Security — Phishing URL Detection - MLOps
+# Network Security - Phishing URL Detection - MLOps
 
 An end-to-end machine learning system that detects phishing websites from URL-based features. The project covers the full MLOps lifecycle: data ingestion from MongoDB, automated validation and drift detection, feature transformation, model training with experiment tracking, a REST API for training/inference, and containerized deployment.
 
